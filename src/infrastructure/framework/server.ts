@@ -28,8 +28,8 @@ export class Server {
   }
 
   start() {
-    this.httpServer = http.createServer(this.app);
-    this.httpServer
+    this.httpServer = http
+      .createServer(this.app)
       .listen(this.app.get('port'))
       .on('error', error => {
         throw error;

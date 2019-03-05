@@ -1,9 +1,8 @@
 import Express from 'express';
 import { AgreementsService } from '../../../domain/services/agreements.service';
-import { Get, Post, Controller, Injectable } from '../../../infrastructure/framework';
+import { Get, Post, Controller } from '../../../infrastructure/framework';
 
 @Controller()
-@Injectable()
 export class AgreementsController {
 
   constructor(
