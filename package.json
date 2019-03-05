@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "serve": "ts-node src/host.ts",
-    "watch-node": "ts-node src/host.ts && nodemon src/host.ts",
+    "start": "nodemon",
     "test": "jest"
   },
   "author": "",
