@@ -1,6 +1,6 @@
 import Express from 'express';
 import http from 'http';
-import { Container } from './di/container';
+import { Injector } from './di/injector';
 import { ClassType, ControllerMethodMetadata } from './types';
 
 type ConfigFn = (app: Express.Application) => void;
@@ -49,7 +49,7 @@ export class Server {
   }
 
   private registerControllers() {
-    Container
+    Injector
       .filter(instance => Reflect.hasMetadata(ClassType.Controller, instance))
       .forEach(([_, controller]) =>
         Reflect
@@ -61,7 +61,7 @@ export class Server {
               metadata.descriptor.value
             )
           )
-        );
+      );
 
     this.app.use(this.router);
   }

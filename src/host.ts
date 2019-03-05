@@ -1,13 +1,13 @@
 import bodyParser from 'body-parser';
 
 import { Application } from './app/app';
-import { Container } from './infrastructure/framework';
+import { Injector } from './infrastructure/framework';
 import { AgreementsController } from './app/api/controllers/agreements.controller';
 import { UsersController } from './app/api/controllers/users.controller';
 
-Container
-  .bind(AgreementsController)
-  .bind(UsersController)
+Injector
+  .init(AgreementsController)
+  .init(UsersController)
   .get(Application)
   .server
   .config(

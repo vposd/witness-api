@@ -1,19 +1,19 @@
 import 'reflect-metadata';
 import { Type } from '../types';
 
-type ContainerFilterFn<T> = (instance: T, constructor: Type<T>) => boolean;
+type InjectorFilterFn<T> = (instance: T, constructor: Type<T>) => boolean;
 
-export const Container = new class {
+export const Injector = new class {
 
   private store = new Map<Type<any>, any>();
 
-  filter(filterFn: ContainerFilterFn<any>) {
+  filter(filterFn: InjectorFilterFn<any>) {
     return Array
       .from(this.store)
       .filter(([instance, constructor]) => filterFn(instance, constructor));
   }
 
-  bind<T>(target: Type<T>) {
+  init<T>(target: Type<T>) {
     this.resolve(target);
     return this;
   }
