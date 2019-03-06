@@ -51,16 +51,17 @@ export class Server {
   private registerControllers() {
     Injector
       .filter(instance => Reflect.hasMetadata(ClassType.Controller, instance))
-      .forEach(([_, controller]) =>
+      .forEach(([_, controller]) => {
         Reflect
           .getMetadataKeys(controller)
           .map(key => Reflect.getMetadata(key, controller))
           .forEach((metadata: ControllerMethodMetadata) =>
             this.router[metadata.method](
               metadata.path,
-              metadata.descriptor.value
+              metadata.descriptor.value.bind(controller)
             )
-          )
+          );
+        }
       );
 
     this.app.use(this.router);
