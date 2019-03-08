@@ -1,18 +1,37 @@
+import { Length, IsUrl, IsEmail, IsString, IsNotEmpty } from 'class-validator';
 import { Entity } from '../entity';
+import { validate } from '../../infrastructure/helpers/validator';
 
 export class User extends Entity {
+
+  @Length(4, 50)
+  @IsNotEmpty()
+  name: string;
+
+  @IsUrl()
+  @IsNotEmpty()
+  photoUrl: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 
   attachedAgreements: Set<string>;
   approvedAgreements: Set<string>;
 
   constructor(
-    public name: string,
-    public photoUrl: string,
-    public email: string
+    name: string,
+    photoUrl: string,
+    email: string
   ) {
     super();
+    this.name = name;
+    this.photoUrl = photoUrl;
+    this.email = email;
     this.attachedAgreements = new Set();
     this.approvedAgreements = new Set();
+
+    validate(this);
   }
 
   attachAgreement(agreementId: string) {

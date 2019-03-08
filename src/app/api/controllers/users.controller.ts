@@ -1,6 +1,8 @@
 import Express from 'express';
 import { UsersService } from '../../../domain/services/users.service';
 import { Controller, Get, Post } from '../../../infrastructure/framework';
+import { User } from '../../../domain/entities/user.entity';
+import { validate } from '../../../infrastructure/helpers/validator';
 
 @Controller()
 export class UsersController {
@@ -26,10 +28,17 @@ export class UsersController {
   @Post('/api/users')
   async addUser(req: Express.Request, res: Express.Response) {
     try {
-      const e = await this.usersService.add(req.body);
+      const user = new User(
+        req.body.name,
+        req.body.photoUrl,
+        req.body.email
+      );
+      await validate(user);
+
+      await this.usersService.add(user);
       res
-        .status(200)
-        .json(e);
+        .status(201)
+        .send();
     } catch (error) {
       res
         .status(500)
