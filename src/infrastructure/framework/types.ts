@@ -4,10 +4,6 @@ export interface Type<T> {
   new(...args: any[]): T;
 }
 
-export enum ClassType {
-  Controller = 'Controller'
-}
-
 export enum HttpMethod {
   Get = 'get',
   Post = 'post',

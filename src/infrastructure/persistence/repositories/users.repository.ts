@@ -5,6 +5,9 @@ import { DbSource } from '../db/db-source.service';
 
 @Injectable()
 export class UsersRepository extends BaseRepository<User> {
+
+  storeName = 'users';
+
   constructor(db: DbSource) {
     super(db);
   }

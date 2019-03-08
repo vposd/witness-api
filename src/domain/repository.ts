@@ -1,6 +1,8 @@
 import { Entity } from './entity';
 
 export interface Repository<T extends Entity> {
+  storeName: string;
+
   save(entity: T): Promise<T>;
   find(req: object): Promise<T[]>;
   findOne(condition: object): Promise<T>;

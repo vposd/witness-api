@@ -5,6 +5,8 @@ import { MongoDbContext } from './mongo-db-context';
 
 export class MongoRepository<T extends Entity> implements Repository<T> {
 
+  storeName: string;
+
   constructor(
     public dbContext: MongoDbContext
   ) { }
@@ -23,7 +25,9 @@ export class MongoRepository<T extends Entity> implements Repository<T> {
 
   async findOne(conditions: object) {
     const collection = await this.collection;
-    const cursor = collection.find(conditions).limit(1);
+    const cursor = collection
+      .find(conditions)
+      .limit(1);
 
     const res = await cursor.toArray();
     if (res && res.length) {
@@ -44,7 +48,7 @@ export class MongoRepository<T extends Entity> implements Repository<T> {
   private get collection(): Promise<Collection<T>> {
     return new Promise<Collection<T>>(async (resolve, reject) => {
       const db = await this.dbContext.db;
-      db.collection('collection', { strict: true }, async (err, collection) => {
+      db.collection(this.storeName, { strict: true }, async (err, collection) => {
         let ourCollection = collection;
 
         if (!err) {
@@ -52,7 +56,7 @@ export class MongoRepository<T extends Entity> implements Repository<T> {
         }
 
         try {
-          ourCollection = await db.createCollection('collection');
+          ourCollection = await db.createCollection(this.storeName);
         } catch (createErr) {
           reject(createErr);
         }

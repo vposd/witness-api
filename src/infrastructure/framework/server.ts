@@ -1,7 +1,8 @@
 import Express from 'express';
 import http from 'http';
 import { Injector } from './di/injector';
-import { ClassType, ControllerMethodMetadata } from './types';
+import { ControllerMethodMetadata } from './types';
+import { isController } from './controller.decorator';
 
 type ConfigFn = (app: Express.Application) => void;
 
@@ -50,7 +51,7 @@ export class Server {
 
   private registerControllers() {
     Injector
-      .filter(instance => Reflect.hasMetadata(ClassType.Controller, instance))
+      .filter(isController)
       .forEach(([_, controller]) => {
         Reflect
           .getMetadataKeys(controller)

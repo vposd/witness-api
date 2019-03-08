@@ -10,9 +10,10 @@ export class MongoDbContext implements DbContext<MongoClient, Db> {
 
   get db() {
     return this.client
-      .then(client => client.db('mflix'));
+      .then(client => client.db(this.dbName));
   }
 
+  private dbName: string;
   private clientPromise: Promise<MongoClient>;
   private clientDeffered: Deferred<MongoClient>;
 
@@ -21,7 +22,8 @@ export class MongoDbContext implements DbContext<MongoClient, Db> {
     this.clientPromise = this.clientDeffered.promise;
   }
 
-  async connect(uri: string) {
+  async connect(uri: string, dbName?: string) {
+    this.dbName = dbName;
     try {
       const client = await this.createClient(uri);
       this.clientDeffered.resolve(client);
