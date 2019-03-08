@@ -13,36 +13,26 @@ export class UsersController {
 
   @Get('/api/users/:id')
   async getUser(req: Express.Request, res: Express.Response) {
-    try {
-      const user = await this.usersService.get(req.params.id);
-      res
-        .status(200)
-        .json(user);
-    } catch (error) {
-      res
-        .status(500)
-        .json(error);
-    }
+    const user = await this.usersService.get(req.params.id);
+
+    res
+      .status(200)
+      .json(user);
   }
 
   @Post('/api/users')
-  async addUser(req: Express.Request, res: Express.Response) {
-    try {
-      const user = new User(
-        req.body.name,
-        req.body.photoUrl,
-        req.body.email
-      );
-      await validate(user);
+  async addUser(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
+    const user = new User(
+      req.body.name,
+      req.body.photoUrl,
+      req.body.email
+    );
 
-      await this.usersService.add(user);
-      res
-        .status(201)
-        .send();
-    } catch (error) {
-      res
-        .status(500)
-        .json({error: error.toString()});
-    }
+    await validate(user);
+    await this.usersService.add(user);
+
+    res
+      .status(201)
+      .send();
   }
 }

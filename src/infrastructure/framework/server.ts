@@ -3,12 +3,14 @@ import http from 'http';
 import { Injector } from './di/injector';
 import { ControllerMethodMetadata } from './types';
 import { isController } from './controller.decorator';
+import { asyncMiddleware } from '../helpers/async-middleware';
 
 type ConfigFn = (app: Express.Application) => void;
 
 export class Server {
 
   private configFn: ConfigFn;
+  private errorConfigFn: ConfigFn;
   private router: Express.Router;
   private httpServer: http.Server;
 
@@ -23,8 +25,9 @@ export class Server {
   }
 
   build() {
-    this.configFn.apply(undefined, [this.app]);
+    this.configFn.call(undefined, this.app);
     this.registerControllers();
+    this.errorConfigFn.call(undefined, this.app);
     return this;
   }
 
@@ -49,6 +52,11 @@ export class Server {
     return this;
   }
 
+  errorConfig(errorConfigFn: ConfigFn) {
+    this.errorConfigFn = errorConfigFn;
+    return this;
+  }
+
   private registerControllers() {
     Injector
       .filter(isController)
@@ -59,7 +67,7 @@ export class Server {
           .forEach((metadata: ControllerMethodMetadata) =>
             this.router[metadata.method](
               metadata.path,
-              metadata.descriptor.value.bind(controller)
+              asyncMiddleware(metadata.descriptor.value.bind(controller))
             )
           );
         }

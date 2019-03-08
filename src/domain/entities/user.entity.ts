@@ -30,8 +30,6 @@ export class User extends Entity {
     this.email = email;
     this.attachedAgreements = new Set();
     this.approvedAgreements = new Set();
-
-    validate(this);
   }
 
   attachAgreement(agreementId: string) {
