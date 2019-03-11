@@ -34,7 +34,7 @@ export class Server {
   start() {
     this.httpServer = http
       .createServer(this.app)
-      .listen(this.app.get('port'))
+      .listen(process.env.PORT || 9000)
       .on('error', error => {
         throw error;
       })

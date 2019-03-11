@@ -9,7 +9,12 @@ export class Config {
   };
 
   constructor() {
-    Object.assign(this, require('../config.json'));
+    Object.assign(this, {
+      db: {
+        name: process.env.DB_NAME,
+        uri: process.env.DB_CONNECTION_STRING,
+      }
+    });
     Object.freeze(this);
   }
 }

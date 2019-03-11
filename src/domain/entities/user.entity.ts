@@ -1,6 +1,5 @@
-import { Length, IsUrl, IsEmail, IsString, IsNotEmpty } from 'class-validator';
+import { Length, IsUrl, IsEmail, IsNotEmpty } from 'class-validator';
 import { Entity } from '../entity';
-import { validate } from '../../infrastructure/helpers/validator';
 
 export class User extends Entity {
 
