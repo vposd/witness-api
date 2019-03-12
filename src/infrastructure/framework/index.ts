@@ -1,7 +1,7 @@
+import { Controller, Get, Post, Patch, Put, Delete, Authorize } from './api/decorators';
 import { GenericClassDecorator } from './types';
-import { Injectable } from './di/injectable.decorator';
+import { Injectable } from './di/decorators';
 import { Injector } from './di/injector';
-import { Controller, Get, Post, Patch, Put, Delete } from './controller.decorator';
 import { Server } from './server';
 
 export {
@@ -9,6 +9,7 @@ export {
   Injector,
   Injectable,
   Controller,
+  Authorize,
   Get,
   Post,
   Patch,

@@ -5,6 +5,10 @@ export class User extends Entity {
 
   @Length(4, 50)
   @IsNotEmpty()
+  username: string;
+
+  @Length(4, 50)
+  @IsNotEmpty()
   name: string;
 
   @IsUrl()
@@ -20,11 +24,13 @@ export class User extends Entity {
 
   constructor(
     name: string,
+    username: string,
     photoUrl: string,
     email: string
   ) {
     super();
     this.name = name;
+    this.username = username;
     this.photoUrl = photoUrl;
     this.email = email;
     this.attachedAgreements = new Set();

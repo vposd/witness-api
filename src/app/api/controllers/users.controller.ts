@@ -21,9 +21,10 @@ export class UsersController {
   }
 
   @Post('/api/users')
-  async addUser(req: Express.Request, res: Express.Response, next: Express.NextFunction) {
+  async addUser(req: Express.Request, res: Express.Response) {
     const user = new User(
       req.body.name,
+      req.body.username,
       req.body.photoUrl,
       req.body.email
     );

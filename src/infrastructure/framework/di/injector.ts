@@ -1,6 +1,7 @@
 import 'reflect-metadata';
+
 import { Type } from '../types';
-import { isInjectable } from './injectable.decorator';
+import { isInjectable } from './decorators';
 
 type InjectorFilterFn<T> = (instance: T, constructor: Type<T>) => boolean;
 

@@ -1,9 +1,10 @@
 import Express from 'express';
 import http from 'http';
+
 import { Injector } from './di/injector';
-import { ControllerMethodMetadata } from './types';
-import { isController } from './controller.decorator';
-import { asyncMiddleware } from '../helpers/async-middleware';
+import { isController } from './api/decorators';
+import { asyncHandler } from './api/handlers/async.handler';
+import { ControllerMethodMetadata, METADATA_KEY } from './types';
 
 type ConfigFn = (app: Express.Application) => void;
 
@@ -34,7 +35,7 @@ export class Server {
   start() {
     this.httpServer = http
       .createServer(this.app)
-      .listen(process.env.PORT || 9000)
+      .listen(process.env.APP_PORT || 9000)
       .on('error', error => {
         throw error;
       })
@@ -58,19 +59,26 @@ export class Server {
   }
 
   private registerControllers() {
+
+    const registerRoutes = (controller: any) =>
+      (metadataList: ControllerMethodMetadata[]) =>
+        metadataList
+          .forEach(metadata => {
+            this.router[metadata.httpMethod](
+              metadata.path,
+              ...metadata.middlewares,
+              asyncHandler(metadata.descriptor.value.bind(controller))
+            );
+          });
+
     Injector
       .filter(isController)
-      .forEach(([_, controller]) => {
+      .forEach(([_, controller]) =>
         Reflect
           .getMetadataKeys(controller)
-          .map(key => Reflect.getMetadata(key, controller))
-          .forEach((metadata: ControllerMethodMetadata) =>
-            this.router[metadata.method](
-              metadata.path,
-              asyncMiddleware(metadata.descriptor.value.bind(controller))
-            )
-          );
-        }
+          .filter(key => key.toString() === METADATA_KEY.controllerMethod.toString())
+          .map(httpMethod => Reflect.getMetadata(httpMethod, controller))
+          .forEach(registerRoutes(controller))
       );
 
     this.app.use(this.router);

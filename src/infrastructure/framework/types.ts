@@ -1,3 +1,5 @@
+import { RequestHandler } from 'express';
+
 export type GenericClassDecorator<T> = (target: T) => void;
 
 export interface Type<T> {
@@ -5,17 +7,27 @@ export interface Type<T> {
 }
 
 export enum HttpMethod {
-  Get = 'get',
-  Post = 'post',
-  Put = 'put',
-  Patch = 'patch',
-  Delete = 'delete'
+  get = 'get',
+  post = 'post',
+  put = 'put',
+  patch = 'patch',
+  delete = 'delete'
 }
 
 export interface ControllerMethodMetadata {
-  method: HttpMethod;
+  httpMethod: HttpMethod;
   propertyKey: string;
   path: string;
   target: any;
   descriptor: PropertyDescriptor;
+  middlewares: Middleware[];
 }
+
+export const METADATA_KEY = {
+  authorize: Symbol('authorize'),
+  injectable: Symbol('injectable'),
+  controller: Symbol('controller'),
+  controllerMethod: Symbol('controllerMethod')
+};
+
+export type Middleware = RequestHandler;
