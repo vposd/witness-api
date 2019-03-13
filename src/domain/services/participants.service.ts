@@ -9,8 +9,17 @@ export class ParticipantsService {
     private patricipantsRepository: ParticipantsRepository
   ) { }
 
-  add(participant: Participant) {
-    return this.patricipantsRepository.save(participant);
+  async getOrCreateUserParticipant(userId: string) {
+    const participant = await this.patricipantsRepository.findOne({ userId });
+
+    if (participant) {
+      return participant;
+    }
+
+    const newParticipant = new Participant(userId);
+    await newParticipant.validate();
+
+    return this.patricipantsRepository.save(newParticipant);
   }
 
   get(id: string) {

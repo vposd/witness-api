@@ -5,7 +5,6 @@ import cookieParser from 'cookie-parser';
 import session from 'express-session';
 import passport from 'passport';
 import helmet from 'helmet';
-import { OAuth2Strategy } from 'passport-google-oauth';
 
 import { Application } from './app/app';
 import { errorHandler } from './app/api/middleware/error-handler';

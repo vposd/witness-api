@@ -7,32 +7,24 @@ export class Participant extends Entity {
   @IsNotEmpty()
   userId: string;
 
-  get attachedAgreements() {
-    return Array.from(this._attachedAgreements);
-  }
-
-  get approvedAgreements() {
-    return Array.from(this._approvedAgreements);
-  }
-
-  private _attachedAgreements: Set<string>;
-  private _approvedAgreements: Set<string>;
+  attachedAgreements: Set<string>;
+  approvedAgreements: Set<string>;
 
   constructor(
     userId: string
   ) {
     super();
     this.userId = userId;
-    this._attachedAgreements = new Set();
-    this._approvedAgreements = new Set();
+    this.attachedAgreements = new Set();
+    this.approvedAgreements = new Set();
   }
 
   attachAgreement(agreementId: string) {
-    this._attachedAgreements.add(agreementId);
+    this.attachedAgreements.add(agreementId);
   }
 
   approveAgreement(agreementId: string) {
     this.attachAgreement(agreementId);
-    this._approvedAgreements.add(agreementId);
+    this.approvedAgreements.add(agreementId);
   }
 }

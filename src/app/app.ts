@@ -2,8 +2,9 @@ import { Injectable, Server, Injector } from '../infrastructure/framework';
 import { DbSource } from '../infrastructure/persistence/db/db-source.service';
 import { AgreementsController } from './api/controllers/agreements.controller';
 import { AuthController } from './api/controllers/auth.controller';
-import { AuthService } from './api/auth/auth.service';
+import { ParticipantsController } from './api/controllers/participants.controller';
 import { Config } from './config';
+import { AuthService } from './auth/auth.service';
 
 @Injectable()
 export class Application {
@@ -31,6 +32,7 @@ export class Application {
   private registerControllers() {
     Injector
       .init(AuthController)
+      .init(ParticipantsController)
       .init(AgreementsController);
   }
 
