@@ -2,25 +2,26 @@ import Express from 'express';
 import { authenticate } from 'passport';
 import { popupResponse } from 'popup-tools';
 
-import { Get, Controller, Post, Authorize } from '../../../infrastructure/framework';
-import { AuthService } from '../auth/auth.service';
+import { Get, Controller, Post, Authorize, Middleware } from '../../../infrastructure/framework';
+
+const googleAuthHandler = authenticate('google', {
+  scope: ['email']
+});
+
+const googleAuthCallbackHandler = authenticate('google', {
+  failureRedirect: '/',
+  session: true
+});
 
 @Controller()
 export class AuthController {
 
-  constructor(
-    private authService: AuthService
-  ) { }
+  @Middleware(googleAuthHandler)
+  @Get('/api/auth/google')
+  authenticateRequest() {}
 
-  @Get('/api/auth/google', authenticate('google', {
-    scope: ['https://www.googleapis.com/auth/userinfo.profile']
-  }))
-  authenticateRequest() { }
-
-  @Get('/api/auth/google/callback', authenticate('google', {
-    failureRedirect: '/',
-    session: true
-  }))
+  @Middleware(googleAuthCallbackHandler)
+  @Get('/api/auth/google/callback')
   authenticate(req: Express.Request, res: Express.Response) {
     req.session.token = req.user.token;
     res.set({ 'content-type': 'text/html; charset=utf-8' });
@@ -30,7 +31,9 @@ export class AuthController {
   @Authorize
   @Get('/api/auth/user')
   getUser(req: Express.Request, res: Express.Response) {
-    res.status(200).json({auth: req.session});
+    res
+      .status(200)
+      .json(req.user);
   }
 
   @Post('/api/logout')

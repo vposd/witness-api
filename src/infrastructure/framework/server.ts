@@ -60,7 +60,7 @@ export class Server {
 
   private registerControllers() {
 
-    const registerRoutes = (controller: any) =>
+    const registerControllerMethods = (controller: any) =>
       (metadataList: ControllerMethodMetadata[]) =>
         metadataList
           .forEach(metadata => {
@@ -78,7 +78,7 @@ export class Server {
           .getMetadataKeys(controller)
           .filter(key => key.toString() === METADATA_KEY.controllerMethod.toString())
           .map(httpMethod => Reflect.getMetadata(httpMethod, controller))
-          .forEach(registerRoutes(controller))
+          .forEach(registerControllerMethods(controller))
       );
 
     this.app.use(this.router);

@@ -1,56 +1,37 @@
-import { Type, GenericClassDecorator, ControllerMethodMetadata, Middleware, HttpMethod } from '../types';
+import { Type, GenericClassDecorator, ControllerMethodMetadata, Middleware as MiddlewareType, HttpMethod } from '../types';
 import { METADATA_KEY } from '../constants';
 import { protectMethodHandler } from './handlers/protect-method.handler';
 
-export const Controller = (): GenericClassDecorator<Type<object>> =>
-  (target: Type<object>) =>
-    Reflect.defineMetadata(METADATA_KEY.controller, true, target);
+const addMiddleware = (middleware: MiddlewareType) =>
+  (target: any, propertyKey: string) => {
+    const controllerMethodMetadata = (Reflect.getMetadata(METADATA_KEY.controllerMethod, target) || [])
+      .map((metadata: ControllerMethodMetadata) => {
+        if (metadata.propertyKey !== propertyKey) {
+          return metadata;
+        }
 
-export const isController = <T>(target: Type<T>) =>
-  Reflect.getMetadata(
-    METADATA_KEY.controller,
-    target
-  ) === true;
+        return {
+          ...metadata,
+          middlewares: [
+            ...metadata.middlewares,
+            middleware
+          ]
+        };
+      });
 
-export const Get = (path: string, ...middlewares: Middleware[]) => defineMethodMetadata(HttpMethod.get, path, middlewares);
+    Reflect.defineMetadata(
+      METADATA_KEY.controllerMethod,
+      controllerMethodMetadata,
+      target
+    );
+  };
 
-export const Post = (path: string, ...middlewares: Middleware[]) => defineMethodMetadata(HttpMethod.post, path, middlewares);
-
-export const Patch = (path: string, ...middlewares: Middleware[]) => defineMethodMetadata(HttpMethod.patch, path, middlewares);
-
-export const Put = (path: string, ...middlewares: Middleware[]) => defineMethodMetadata(HttpMethod.put, path, middlewares);
-
-export const Delete = (path: string, ...middlewares: Middleware[]) => defineMethodMetadata(HttpMethod.delete, path, middlewares);
-
-export const Authorize = (target: any, propertyKey: string) => {
-  const controllerMethodMetadata = (Reflect.getMetadata(METADATA_KEY.controllerMethod, target) || [])
-    .map((metadata: ControllerMethodMetadata) => {
-      if (metadata.propertyKey !== propertyKey) {
-        return metadata;
-      }
-
-      return {
-        ...metadata,
-        middlewares: [
-          protectMethodHandler,
-          ...metadata.middlewares
-        ]
-      };
-    });
-
-  Reflect.defineMetadata(
-    METADATA_KEY.controllerMethod,
-    controllerMethodMetadata,
-    target
-  );
-};
-
-const defineMethodMetadata = (httpMethod: HttpMethod, path: string, middlewares: Middleware[]) =>
+const defineMethodMetadata = (httpMethod: HttpMethod, path: string) =>
   (target: any, propertyKey: string, descriptor: PropertyDescriptor) => {
 
     const methodMetadata: ControllerMethodMetadata = {
       descriptor,
-      middlewares,
+      middlewares: [],
       httpMethod,
       propertyKey,
       path,
@@ -67,3 +48,22 @@ const defineMethodMetadata = (httpMethod: HttpMethod, path: string, middlewares:
       target
     );
   };
+
+export const Controller = (): GenericClassDecorator<Type<object>> =>
+  (target: Type<object>) =>
+    Reflect.defineMetadata(METADATA_KEY.controller, true, target);
+
+export const isController = <T>(target: Type<T>) =>
+  Reflect.getMetadata(
+    METADATA_KEY.controller,
+    target
+  ) === true;
+
+export const Get = (path: string) => defineMethodMetadata(HttpMethod.get, path);
+export const Post = (path: string) => defineMethodMetadata(HttpMethod.post, path);
+export const Patch = (path: string) => defineMethodMetadata(HttpMethod.patch, path);
+export const Put = (path: string) => defineMethodMetadata(HttpMethod.put, path);
+export const Delete = (path: string) => defineMethodMetadata(HttpMethod.delete, path);
+
+export const Middleware = addMiddleware;
+export const Authorize = addMiddleware(protectMethodHandler);

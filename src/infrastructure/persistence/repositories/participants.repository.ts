@@ -1,12 +1,12 @@
 import { Injectable } from '../../framework';
 import { BaseRepository } from '../db/base-repository.class';
 import { DbSource } from '../db/db-source.service';
-import { User } from '../../../app/auth/user';
+import { Participant } from '../../../domain/entities/participant.entity';
 
 @Injectable()
-export class UsersRepository extends BaseRepository<User> {
+export class ParticipantsRepository extends BaseRepository<Participant> {
 
-  storeName = 'users';
+  storeName = 'participants';
 
   constructor(db: DbSource) {
     super(db);

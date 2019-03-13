@@ -1,6 +1,11 @@
-export const protectMethodHandler = (req: any, res: any, next: any) => {
+import { Middleware } from '../../types';
+
+export const protectMethodHandler: Middleware = (req, res, next) => {
   if (!req.isAuthenticated()) {
-    return res.sendStatus(401);
+    res
+      .status(401)
+      .send();
+    return;
   }
   next();
 };

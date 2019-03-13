@@ -1,9 +1,9 @@
 import { Collection, ObjectID } from 'mongodb';
 import { Repository } from '../../../../domain/repository';
-import { Entity } from '../../../../domain/entity';
 import { MongoDbContext } from './mongo-db-context';
+import { EntityDocument } from './entity-document';
 
-export class MongoRepository<T extends Entity> implements Repository<T> {
+export class MongoRepository<T extends EntityDocument> implements Repository<T> {
 
   storeName: string;
 
@@ -13,14 +13,36 @@ export class MongoRepository<T extends Entity> implements Repository<T> {
 
   async save(entity: T) {
     const collection = await this.collection;
-    await collection.insertOne(entity);
-    return entity;
+    const id = new ObjectID(entity.id);
+
+    delete entity.id;
+    delete entity._id;
+
+    await collection.updateOne(
+      { _id: id },
+      { $set: entity },
+      { upsert: true }
+    );
+
+    const newDocument = await collection.findOne({ _id: id });
+
+    if (newDocument) {
+      Object.assign(entity, newDocument);
+    }
+
+    newDocument.id = id.toString();
+    delete newDocument._id;
+
+    return newDocument;
   }
 
   async find(conditions: object) {
     const collection = await this.collection;
     const cursor = collection.find(conditions);
-    return await cursor.toArray();
+    const results = (await cursor.toArray())
+      .map(document => this.toggleDocumentId(document));
+
+    return results;
   }
 
   async findOne(conditions: object) {
@@ -31,8 +53,7 @@ export class MongoRepository<T extends Entity> implements Repository<T> {
 
     const res = await cursor.toArray();
     if (res && res.length) {
-      const document = res[0];
-      return document;
+      return this.toggleDocumentId(res[0]);
     }
   }
 
@@ -43,6 +64,20 @@ export class MongoRepository<T extends Entity> implements Repository<T> {
 
   async deleteById(id: string) {
     throw new Error('Method not implemented.');
+  }
+
+  private toggleDocumentId(document: any, replace = false): T {
+    if (!document || !(document.id || document._id)) {
+      return;
+    }
+    if (replace) {
+      document._id = new ObjectID(document.id);
+      delete document.id;
+    } else {
+      document.id = document._id.toString();
+      delete document._id;
+    }
+    return document;
   }
 
   private get collection(): Promise<Collection<T>> {
@@ -63,5 +98,4 @@ export class MongoRepository<T extends Entity> implements Repository<T> {
       });
     });
   }
-
 }

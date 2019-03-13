@@ -1,19 +1,19 @@
 import { Injectable } from '../../infrastructure/framework';
-import { UsersRepository } from '../../infrastructure/persistence/repositories/users.repository';
-import { User } from '../entities/user.entity';
+import { Participant } from '../entities/participant.entity';
+import { ParticipantsRepository } from '../../infrastructure/persistence/repositories/participants.repository';
 
 @Injectable()
-export class UsersService {
+export class ParticipantsService {
 
   constructor(
-    private usersRepository: UsersRepository
+    private patricipantsRepository: ParticipantsRepository
   ) { }
 
-  add(user: User) {
-    return this.usersRepository.save(user);
+  add(participant: Participant) {
+    return this.patricipantsRepository.save(participant);
   }
 
   get(id: string) {
-    return this.usersRepository.findById(id);
+    return this.patricipantsRepository.findById(id);
   }
 }

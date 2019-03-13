@@ -1,6 +1,6 @@
 import Express from 'express';
 import { AgreementsService } from '../../../domain/services/agreements.service';
-import { Get, Post, Controller } from '../../../infrastructure/framework';
+import { Post, Controller } from '../../../infrastructure/framework';
 
 @Controller()
 export class AgreementsController {
@@ -9,14 +9,7 @@ export class AgreementsController {
     private agreementsService: AgreementsService
   ) { }
 
-  @Get('/api/get')
-  get(req: Express.Request, res: Express.Response) {
-    res
-      .status(200)
-      .send({ hello: true });
-  }
-
-  @Post('/api/post')
+  @Post('/api/agreements')
   post(req: Express.Request, res: Express.Response) {
     res
       .status(200)

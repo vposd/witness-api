@@ -1,18 +1,23 @@
 import { Entity } from '../entity';
-import { User } from './user.entity';
+import { Participant } from './participant.entity';
 
 export class Agreement extends Entity {
 
+  get tags() {
+    return Array.from(this._tags);
+  }
+
   createdAt: Date;
   isCompleted: boolean;
-  participants: User[];
-  tags: Set<string>;
+  participants: Participant[];
+
+  private _tags: Set<string>;
 
   constructor(
     public title: string,
     public body: string,
-    public author: User,
-    participants: User[] = [],
+    public author: Participant,
+    participants: Participant[] = [],
     tags: string[] = [],
   ) {
     super();
@@ -23,18 +28,18 @@ export class Agreement extends Entity {
   }
 
   addTag(tag: string) {
-    this.tags.add(tag);
+    this._tags.add(tag);
   }
 
   removeTag(tag: string) {
-    this.tags.delete(tag);
+    this._tags.delete(tag);
   }
 
   complete() {
     this.isCompleted = true;
   }
 
-  addParticipant(participant: User) {
+  addParticipant(participant: Participant) {
     const isParticipantExist = this.participants
       .some(p => p.id === participant.id);
 
@@ -46,7 +51,7 @@ export class Agreement extends Entity {
     this.participants.push(participant);
   }
 
-  private updateParticipants(participants: User[]) {
+  private updateParticipants(participants: Participant[]) {
     this.author.attachAgreement(this.id);
     this.author.approveAgreement(this.id);
 

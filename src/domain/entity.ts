@@ -1,9 +1,10 @@
-import uuid from 'uuid/v1';
+import { validate } from '../infrastructure/helpers/validator';
 
 export abstract class Entity {
+
   id: string;
 
-  constructor() {
-    this.id = uuid();
+  async validate() {
+    return validate(this);
   }
 }

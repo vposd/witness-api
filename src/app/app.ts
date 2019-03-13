@@ -1,11 +1,8 @@
-import { OAuth2Strategy } from 'passport-google-oauth';
-import passport from 'passport';
-
 import { Injectable, Server, Injector } from '../infrastructure/framework';
 import { DbSource } from '../infrastructure/persistence/db/db-source.service';
 import { AgreementsController } from './api/controllers/agreements.controller';
-import { UsersController } from './api/controllers/users.controller';
 import { AuthController } from './api/controllers/auth.controller';
+import { AuthService } from './api/auth/auth.service';
 import { Config } from './config';
 
 @Injectable()
@@ -15,47 +12,26 @@ export class Application {
 
   constructor(
     private db: DbSource,
-    private config: Config
+    private config: Config,
+    private authService: AuthService
   ) {
-    this.configAuth();
-    this.registerControllers();
-    this.server = Server.bootstrap();
+    this.initialize();
+  }
+
+  private async initialize() {
     this.db.connect(
       this.config.db.uri,
       this.config.db.name
     );
+    this.authService.configAuth();
+    this.registerControllers();
+    this.server = Server.bootstrap();
   }
 
   private registerControllers() {
     Injector
       .init(AuthController)
-      .init(AgreementsController)
-      .init(UsersController);
-  }
-
-  private configAuth() {
-    const GoogleStrategy = OAuth2Strategy;
-
-    passport.serializeUser((user, done) => {
-      done(null, user);
-    });
-
-    passport.deserializeUser((user, done) => {
-      done(null, user);
-    });
-
-    passport.use(
-      new GoogleStrategy({
-        clientID: process.env.GOOGLE_CLIENT_ID,
-        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-        callbackURL: process.env.GOOGLE_CALLBACK_URL
-      },
-      (token, refreshToken, profile, done) => {
-        return done(null, {
-          profile,
-          token
-        });
-      }));
+      .init(AgreementsController);
   }
 
   static get server() {

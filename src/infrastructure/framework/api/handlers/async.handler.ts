@@ -1,7 +1,9 @@
-import { RequestHandler, NextFunction, Request, Response } from 'express';
+import { Middleware } from '../../types';
 
-export const asyncHandler = (fn: RequestHandler) =>
-  (req: Request, res: Response, next: NextFunction) =>
+type AsyncHandler = (fn: Middleware) => Middleware;
+
+export const asyncHandler: AsyncHandler = fn =>
+  (req, res, next) =>
     Promise
       .resolve(fn(req, res, next))
       .catch(next);
