@@ -1,3 +1,5 @@
+import { classToPlain } from 'class-transformer';
+
 import { Collection, ObjectID } from 'mongodb';
 import { Repository } from '../../../../domain/repository';
 import { MongoDbContext } from './mongo-db-context';
@@ -20,7 +22,7 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
 
     await collection.updateOne(
       { _id: id },
-      { $set: entity },
+      { $set: classToPlain(entity) },
       { upsert: true }
     );
 

@@ -1,4 +1,5 @@
 import { IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
 
 import { Entity } from '../entity';
 
@@ -7,7 +8,10 @@ export class Participant extends Entity {
   @IsNotEmpty()
   userId: string;
 
+  @Type(() => Set)
   attachedAgreements: Set<string>;
+
+  @Type(() => Set)
   approvedAgreements: Set<string>;
 
   constructor(
