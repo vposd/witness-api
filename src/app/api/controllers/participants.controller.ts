@@ -1,7 +1,7 @@
 import Express from 'express';
 import { classToPlain } from 'class-transformer';
 
-import { Controller, Authorize, Get } from '../../../infrastructure/framework';
+import { Authorize, Controller, Get } from '../../../infrastructure/framework';
 import { ParticipantsService } from '../../../domain/services/participants.service';
 
 @Controller()

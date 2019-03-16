@@ -1,12 +1,13 @@
-import { classToPlain, plainToClass } from 'class-transformer';
-
 import { Collection, ObjectID } from 'mongodb';
-import { Repository } from '../../../../domain/repository';
-import { MongoDbContext } from './mongo-db-context';
+
+import { Entity } from '../../../../domain/entity';
 import { EntityDocument } from './entity-document';
 import { METADATA_KEY, Type } from '../../../../infrastructure/framework/types';
+import { MongoDbContext } from './mongo-db-context';
+import { Repository } from '../../../../domain/repository';
+import { entityToDto, dtoToEntity } from '../../../helpers/mapper';
 
-export class MongoRepository<T extends EntityDocument> implements Repository<T> {
+export class MongoRepository<T extends Entity> implements Repository<T> {
 
   private collectionName: string;
   private entityType: Type<T>;
@@ -22,13 +23,14 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
   async save(entity: T) {
     const collection = await this.collection;
     const id = new ObjectID(entity.id);
+    const document: EntityDocument = entityToDto(entity);
 
-    delete entity.id;
-    delete entity._id;
+    delete document.id;
+    delete document._id;
 
     await collection.updateOne(
       { _id: id },
-      { $set: classToPlain(entity) },
+      { $set: document },
       { upsert: true }
     );
 
@@ -41,7 +43,7 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
     newDocument.id = id.toString();
     delete newDocument._id;
 
-    return plainToClass(this.entityType, newDocument);
+    return dtoToEntity(this.entityType, newDocument);
   }
 
   async find(conditions: object) {
@@ -49,7 +51,7 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
     const cursor = collection.find(conditions);
     const results = (await cursor.toArray())
       .map(document => this.toggleDocumentId(document))
-      .map(document => plainToClass(this.entityType, document));
+      .map(document => dtoToEntity(this.entityType, document));
 
     return results;
   }
@@ -63,7 +65,7 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
     const res = await cursor.toArray();
     if (res && res.length) {
       const document = this.toggleDocumentId(res[0]);
-      return plainToClass(this.entityType, document);
+      return dtoToEntity(this.entityType, document);
     }
   }
 
@@ -75,7 +77,7 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
     throw new Error('Method not implemented.');
   }
 
-  private toggleDocumentId(document: any, replace = false): T {
+  private toggleDocumentId(document: EntityDocument, replace = false): EntityDocument {
     if (!document || !(document.id || document._id)) {
       return;
     }
@@ -89,7 +91,7 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
     return document;
   }
 
-  private get collection(): Promise<Collection<T>> {
+  private get collection(): Promise<Collection<EntityDocument>> {
     return new Promise<Collection<T>>(async (resolve, reject) => {
       const db = await this.dbContext.db;
       db.collection(this.collectionName, { strict: true }, async (err, collection) => {

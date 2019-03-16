@@ -1,7 +1,6 @@
 import { ObjectID } from 'mongodb';
 
-import { Entity } from '../../../../domain/entity';
-
-export class EntityDocument extends Entity {
+export class EntityDocument extends Object {
+  id?: string;
   _id?: ObjectID;
 }

@@ -1,10 +1,10 @@
 import Express from 'express';
 import http from 'http';
 
-import { Injector } from './di/injector';
-import { isController } from './api/decorators';
 import { asyncHandler } from './api/handlers/async.handler';
 import { ControllerMethodMetadata, METADATA_KEY } from './types';
+import { Injector } from './di/injector';
+import { isController } from './api/decorators';
 
 type ConfigFn = (app: Express.Application) => void;
 

@@ -1,6 +1,7 @@
 import Express from 'express';
+
 import { AgreementsService } from '../../../domain/services/agreements.service';
-import { Post, Controller } from '../../../infrastructure/framework';
+import { Controller, Post } from '../../../infrastructure/framework';
 
 @Controller()
 export class AgreementsController {

@@ -1,9 +1,9 @@
-import { OAuth2Strategy } from 'passport-google-oauth';
 import passport from 'passport';
+import { OAuth2Strategy } from 'passport-google-oauth';
 
 import { Injectable } from '../../infrastructure/framework';
-import { UsersRepository } from '../../infrastructure/persistence/repositories/users.repository';
 import { User } from './user';
+import { UsersRepository } from '../../infrastructure/persistence/repositories/users.repository';
 
 @Injectable()
 export class AuthService {

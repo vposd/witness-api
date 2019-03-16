@@ -1,6 +1,7 @@
-import { MongoClient, Db } from 'mongodb';
-import { Deferred } from '../../../helpers/deferred.class';
+import { Db, MongoClient } from 'mongodb';
+
 import { DbContext } from '../db-context.interface';
+import { Deferred } from '../../../helpers/deferred.class';
 
 export class MongoDbContext implements DbContext<MongoClient, Db> {
 

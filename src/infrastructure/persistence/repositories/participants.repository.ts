@@ -1,6 +1,6 @@
-import { Injectable } from '../../framework';
 import { BaseRepository } from '../db/base-repository.class';
 import { DbSource } from '../db/db-source.service';
+import { Injectable } from '../../framework';
 import { Participant } from '../../../domain/entities/participant.entity';
 import { Repository } from '../../../infrastructure/framework/db/decorators';
 

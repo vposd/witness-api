@@ -1,8 +1,8 @@
-import { Injectable } from '../../framework';
 import { BaseRepository } from '../db/base-repository.class';
 import { DbSource } from '../db/db-source.service';
-import { User } from '../../../app/auth/user';
+import { Injectable } from '../../framework';
 import { Repository } from '../../../infrastructure/framework/db/decorators';
+import { User } from '../../../app/auth/user';
 
 @Repository({
   collectionName: 'users',
