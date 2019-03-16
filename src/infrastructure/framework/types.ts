@@ -23,9 +23,16 @@ export interface ControllerMethodMetadata {
   middlewares: Middleware[];
 }
 
+export interface RepositoryConfig<T> {
+  collectionName: string;
+  entityType: T;
+}
+
+export interface RepositoryMetadata<T> extends RepositoryConfig<T> {}
+
 export const METADATA_KEY = {
-  authorize: Symbol('authorize'),
   injectable: Symbol('injectable'),
+  repository: Symbol('repository'),
   controller: Symbol('controller'),
   controllerMethod: Symbol('controllerMethod')
 };

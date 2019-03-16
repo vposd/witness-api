@@ -1,17 +1,23 @@
-import { classToPlain } from 'class-transformer';
+import { classToPlain, plainToClass } from 'class-transformer';
 
 import { Collection, ObjectID } from 'mongodb';
 import { Repository } from '../../../../domain/repository';
 import { MongoDbContext } from './mongo-db-context';
 import { EntityDocument } from './entity-document';
+import { METADATA_KEY, Type } from '../../../../infrastructure/framework/types';
 
 export class MongoRepository<T extends EntityDocument> implements Repository<T> {
 
-  storeName: string;
+  private collectionName: string;
+  private entityType: Type<T>;
 
   constructor(
     public dbContext: MongoDbContext
-  ) { }
+  ) {
+    const { collectionName, entityType } = Reflect.getMetadata(METADATA_KEY.repository, this['constructor']);
+    this.collectionName = collectionName;
+    this.entityType = entityType;
+  }
 
   async save(entity: T) {
     const collection = await this.collection;
@@ -35,14 +41,15 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
     newDocument.id = id.toString();
     delete newDocument._id;
 
-    return newDocument;
+    return plainToClass(this.entityType, newDocument);
   }
 
   async find(conditions: object) {
     const collection = await this.collection;
     const cursor = collection.find(conditions);
     const results = (await cursor.toArray())
-      .map(document => this.toggleDocumentId(document));
+      .map(document => this.toggleDocumentId(document))
+      .map(document => plainToClass(this.entityType, document));
 
     return results;
   }
@@ -55,13 +62,13 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
 
     const res = await cursor.toArray();
     if (res && res.length) {
-      return this.toggleDocumentId(res[0]);
+      const document = this.toggleDocumentId(res[0]);
+      return plainToClass(this.entityType, document);
     }
   }
 
   async findById(id: string) {
-    const collection = await this.collection;
-    return collection.findOne({ _id: new ObjectID(id) });
+    return this.findOne({ _id: id });
   }
 
   async deleteById(id: string) {
@@ -85,7 +92,7 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
   private get collection(): Promise<Collection<T>> {
     return new Promise<Collection<T>>(async (resolve, reject) => {
       const db = await this.dbContext.db;
-      db.collection(this.storeName, { strict: true }, async (err, collection) => {
+      db.collection(this.collectionName, { strict: true }, async (err, collection) => {
         let ourCollection = collection;
 
         if (!err) {
@@ -93,7 +100,7 @@ export class MongoRepository<T extends EntityDocument> implements Repository<T> 
         }
 
         try {
-          ourCollection = await db.createCollection(this.storeName);
+          ourCollection = await db.createCollection(this.collectionName);
         } catch (createErr) {
           reject(createErr);
         }

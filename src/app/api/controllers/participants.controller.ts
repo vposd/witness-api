@@ -1,4 +1,5 @@
 import Express from 'express';
+import { classToPlain } from 'class-transformer';
 
 import { Controller, Authorize, Get } from '../../../infrastructure/framework';
 import { ParticipantsService } from '../../../domain/services/participants.service';
@@ -17,7 +18,7 @@ export class ParticipantsController {
 
     res
       .status(200)
-      .json(participant);
+      .json(classToPlain(participant));
   }
 
 }
