@@ -2,7 +2,7 @@ import Express from 'express';
 import { authenticate } from 'passport';
 import { popupResponse } from 'popup-tools';
 
-import { Get, Controller, Post, Authorize, Middleware } from '../../../infrastructure/framework';
+import { Get, Controller, Post, Authorize, Middleware, BaseController } from '../../../infrastructure/framework';
 
 const googleAuthHandler = authenticate('google', {
   scope: ['email']
@@ -14,7 +14,7 @@ const googleAuthCallbackHandler = authenticate('google', {
 });
 
 @Controller()
-export class AuthController {
+export class AuthController extends BaseController {
 
   @Middleware(googleAuthHandler)
   @Get('/api/auth/google')
@@ -31,9 +31,7 @@ export class AuthController {
   @Authorize
   @Get('/api/auth/user')
   getUser(req: Express.Request, res: Express.Response) {
-    res
-      .status(200)
-      .json(req.user);
+    this.ok(res, req.user);
   }
 
   @Post('/api/logout')

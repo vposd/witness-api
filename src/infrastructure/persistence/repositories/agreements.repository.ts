@@ -1,17 +1,17 @@
 import { BaseRepository } from '../db/base-repository.class';
 import { DbSource } from '../db/db-source.service';
 import { Injectable } from '../../framework';
-import { Participant } from '../../../domain/entities/participant.entity';
 import { Repository } from '../../../infrastructure/framework/db/decorators';
+import { Agreement } from '../../../domain/entities/agreement.entity';
 
 @Repository({
-  collectionName: 'participants',
-  entityType: Participant
+  collectionName: 'agreements',
+  entityType: Agreement
 })
 
 @Injectable()
 
-export class ParticipantsRepository extends BaseRepository<Participant> {
+export class AgreementsRepository extends BaseRepository<Agreement> {
   constructor(db: DbSource) {
     super(db);
   }

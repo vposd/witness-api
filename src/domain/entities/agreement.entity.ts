@@ -1,38 +1,42 @@
+import { IsNotEmpty } from 'class-validator';
+import { Type } from 'class-transformer';
+
 import { Entity } from '../entity';
 import { Participant } from './participant.entity';
 
 export class Agreement extends Entity {
 
-  get tags() {
-    return Array.from(this._tags);
-  }
-
   createdAt: Date;
   isCompleted: boolean;
+
+  @IsNotEmpty()
   participants: Participant[];
 
-  private _tags: Set<string>;
+  @Type(() => Set)
+  tags: Set<string>;
 
   constructor(
     public title: string,
     public body: string,
     public author: Participant,
-    participants: Participant[] = [],
-    tags: string[] = [],
+    participants: Participant[],
+    tags: string[]
   ) {
     super();
+    this.tags = new Set<string>();
     this.createdAt = new Date();
     this.isCompleted = false;
+    this.participants = participants || [];
     this.updateTags(tags);
     this.updateParticipants(participants);
   }
 
   addTag(tag: string) {
-    this._tags.add(tag);
+    this.tags.add(tag);
   }
 
   removeTag(tag: string) {
-    this._tags.delete(tag);
+    this.tags.delete(tag);
   }
 
   complete() {

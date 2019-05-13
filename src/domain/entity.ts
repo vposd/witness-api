@@ -1,3 +1,4 @@
+import { classToPlain } from 'class-transformer';
 import { validate } from '../infrastructure/helpers/validator';
 
 export abstract class Entity {
@@ -6,5 +7,9 @@ export abstract class Entity {
 
   async validate() {
     return validate(this);
+  }
+
+  toDto() {
+    return classToPlain(this);
   }
 }

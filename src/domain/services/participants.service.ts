@@ -25,4 +25,8 @@ export class ParticipantsService {
   get(id: string) {
     return this.patricipantsRepository.findById(id);
   }
+
+  getManyById(ids: string[] = []) {
+    return this.patricipantsRepository.findManyById(ids);
+  }
 }

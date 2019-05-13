@@ -5,7 +5,7 @@ import { EntityDocument } from './entity-document';
 import { METADATA_KEY, Type } from '../../../../infrastructure/framework/types';
 import { MongoDbContext } from './mongo-db-context';
 import { Repository } from '../../../../domain/repository';
-import { entityToDto, dtoToEntity } from '../../../helpers/mapper';
+import { dtoToEntity } from '../../../helpers/mapper';
 
 export class MongoRepository<T extends Entity> implements Repository<T> {
 
@@ -23,7 +23,7 @@ export class MongoRepository<T extends Entity> implements Repository<T> {
   async save(entity: T) {
     const collection = await this.collection;
     const id = new ObjectID(entity.id);
-    const document: EntityDocument = entityToDto(entity);
+    const document: EntityDocument = entity.toDto();
 
     delete document.id;
     delete document._id;
@@ -50,6 +50,19 @@ export class MongoRepository<T extends Entity> implements Repository<T> {
     const collection = await this.collection;
     const cursor = collection.find(conditions);
     const results = (await cursor.toArray())
+      .map(document => this.toggleDocumentId(document))
+      .map(document => dtoToEntity(this.entityType, document));
+
+    return results;
+  }
+
+  async findManyById(ids: string[]) {
+    const collection = await this.collection;
+    const found = await collection
+      .find({ _id: { $in: ids.map(id => new ObjectID(id)) } })
+      .toArray();
+
+    const results = found
       .map(document => this.toggleDocumentId(document))
       .map(document => dtoToEntity(this.entityType, document));
 

@@ -1,4 +1,5 @@
 import { IsUrl, IsEmail, IsNotEmpty, ValidateIf } from 'class-validator';
+import { classToPlain } from 'class-transformer';
 
 import { validate } from '../../infrastructure/helpers/validator';
 
@@ -34,5 +35,9 @@ export class User {
 
   validate() {
     return validate(this);
+  }
+
+  toDto() {
+    return classToPlain(this);
   }
 }

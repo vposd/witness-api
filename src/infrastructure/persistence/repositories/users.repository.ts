@@ -8,7 +8,9 @@ import { User } from '../../../app/auth/user';
   collectionName: 'users',
   entityType: User
 })
+
 @Injectable()
+
 export class UsersRepository extends BaseRepository<User> {
   constructor(db: DbSource) {
     super(db);
